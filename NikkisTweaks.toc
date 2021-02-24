@@ -1,0 +1,10 @@
+## Interface: 90002
+## Title: Nikki's Tweaks
+## Notes: Nikki's random UI enhancements and tweaks.
+## Author: Nikketa-Hyjal (US)
+## Version: 1.0
+## SavedVariables: NikkisTweaksDB
+
+Localization.lua
+Core.lua
+Options.lua
