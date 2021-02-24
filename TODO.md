@@ -1,3 +1,17 @@
+- Interface scroll
+- Interface dbl click expand
+- Premade category dbl click
+- Premade group dbl click
+- Premade invite dbl click
+- Quick groups
+- Auto mark tank
+- Auto mark healer
+- Covenant mission table
+- Covenant sanctum
+- Torghast power bar
+- Torghast power choices
+- Torghast power choice keybinds
 - Dungeon finder bang
 - Quick quest abandon
-- Fix apply to group bug
+- Is Quest Completed slash command
+- Game version slash command
