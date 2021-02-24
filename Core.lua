@@ -5,6 +5,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("NikkisTweaks", true)
 --*------------------------------------------------------------------------
 
 function addon:OnInitialize()
+    -- NikkisTweaksDB = nil
+
     local defaults = {
         char = {
             premadeGroups = {
@@ -19,7 +21,7 @@ function addon:OnInitialize()
 
         global = {
             modules = {
-                autoMarkers = {
+                AutoMarkers = {
                     enabled = true,
                     markHealers = true,
                     maxHealers = 5,
@@ -28,36 +30,47 @@ function addon:OnInitialize()
                     maxTanks = 3,
                 },
 
-                covenant = {
+                Covenant = {
                     enabled = true,
-                    missionsPos = false, -- {"TOP", ...}
-                    missionsScale = 1,
-                    sanctumPos = false, -- {"TOP", ...}
-                    sanctumScale = 1,
+                    -- CovenantMissionFrame, CovenantSanctumFrame
+                    ["**"] = {
+                        point = false, -- {"TOP", ...}
+                        savePoint = true,
+                        scale = 1,
+                    },
                 },
 
-                interface = {
+                Interface = {
                     enabled = true,
                     addonScroll = true,
                     addonDblClick = true,
                 },
 
-                premadeGroups = {
+                PremadeGroups = {
                     enabled = true,
-                    categoryDblClick = true,
-                    groupDblClick = true,
-                    inviteDblClick = true,
-                    skipApp = true,
-                    skipAppOverride = "Control", -- "Alt", "Control", "Shift"
+                    dblClick = {
+                        category = true,
+                        group = true,
+                        invite = true,
+                    },
+                    app = {
+                        skip = true,
+                        override = "Control", -- "Alt", "Control", "Shift"
+                    },
                 },
 
-                torghast = {
+                Torghast = {
                     enabled = true,
-                    --PlayerChoiceFrame
-                    choiceFramePos = false, -- {"TOP", ...}
-                    choiceFrameScale = 1,
-                    --PlayerChoiceToggleButton
-                    choiceTogglePos = false,
+                    -- PlayerChoiceFrame, PlayerChoiceToggleButton
+                    ["**"] = {
+                        point = false, -- {"TOP", ...}
+                        savePoint = true,
+                        scale = 1,
+                    },
+
+                    PlayerChoiceFrame = {
+                        modifier = "Control",
+                    },
                 },
             },
         },
@@ -67,3 +80,59 @@ function addon:OnInitialize()
 end
 
 ------------------------------------------------------------
+
+function addon:OnEnable()
+    for moduleName, module in pairs(self.db.global.modules) do
+        if module.enabled then
+            self["On"..moduleName.."Enable"](self)
+        else
+            self["On"..moduleName.."Disable"](self)
+        end
+    end
+end
+
+--*------------------------------------------------------------------------
+
+local function OnDragStart(frame)
+    frame:StartMoving()
+end
+
+------------------------------------------------------------
+
+local function OnDragStop(module, frame)
+    frame:StopMovingOrSizing()
+
+    local name = frame:GetName()
+    if addon.db.global.modules[module][name].savePoint then
+        addon.db.global.modules[module][name].point = {frame:GetPoint()}
+    end
+end
+
+------------------------------------------------------------
+
+function addon:SetFrameMovable(module, frame, movable)
+    frame:EnableMouse(movable)
+    frame:SetMovable(movable)
+	frame:SetClampedToScreen(true)
+	frame:RegisterForDrag(movable and "LeftButton")
+
+    ------------------------------------------------------------
+
+	frame:HookScript("OnDragStart", OnDragStart)
+	frame:HookScript("OnDragStop", function() OnDragStop(module, frame) end)
+	frame:HookScript("OnHide", function() OnDragStop(module, frame) end)
+end
+
+------------------------------------------------------------
+
+function addon:SetFramePoint(module, frame)
+    frame:ClearAllPoints()
+
+    local name = frame:GetName()
+    local frameDB = self.db.global.modules[module][name]
+    if frameDB.savePoint and frameDB.point then
+        frame:SetPoint(unpack(frameDB.point))
+    else
+        frame:SetPoint(unpack(ns[name].point))
+    end
+end
