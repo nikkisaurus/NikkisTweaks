@@ -67,6 +67,20 @@ function addon:OnInitialize()
                     shareQuests = true,
                 },
 
+                SlashCommands = {
+                    enabled = true,
+                    commands = {
+                        qcomplete = {
+                            enabled = true,
+                            method = "IsQuestFlaggedCompleted",
+                        },
+                        interface = {
+                            enabled = true,
+                            method = "GetBuildInfo",
+                        },
+                    },
+                },
+
                 TalentSpecializations = {
                     enabled = true,
                     dblClick = true,

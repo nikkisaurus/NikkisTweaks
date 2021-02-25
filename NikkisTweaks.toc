@@ -28,6 +28,7 @@ Modules\Covenant.lua
 Modules\Interface.lua
 Modules\PremadeGroups.lua
 Modules\QuestLog.lua
+Modules\SlashCommands.lua
 Modules\TalentSpecializations.lua
 Modules\Torghast.lua
 Options.lua
