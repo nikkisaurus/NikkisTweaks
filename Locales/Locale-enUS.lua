@@ -8,6 +8,7 @@ LibStub("LibAddonUtils-1.0"):Embed(addon)
 L["damage"] = true
 L["healer"] = true
 L["Pending Anima Power"] = true
+L["Quest abandoned: \"%s\""] = true
 L["Signed up for \"%s (%s)\" as current role: %s"] = true
 L["Signed up for \"%s (%s)\" as roles: %s%s%s%s%s"] = true
 L["tank"] = true

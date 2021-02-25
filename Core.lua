@@ -61,6 +61,12 @@ function addon:OnInitialize()
                     reportGroup = true, -- "Control+RightButton"
                 },
 
+                QuestLog = {
+                    enabled = true,
+                    abandonQuests = true,
+                    shareQuests = true,
+                },
+
                 TalentSpecializations = {
                     enabled = true,
                     dblClick = true,
