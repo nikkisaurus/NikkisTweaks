@@ -3,6 +3,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("NikkisTweaks")
 local L = LibStub("AceLocale-3.0"):GetLocale("NikkisTweaks", true)
 local AceGUI = LibStub("AceGUI-3.0")
 
+local GetInstanceInfo = GetInstanceInfo
 local Torghast
 
 --*------------------------------------------------------------------------
@@ -16,28 +17,41 @@ function addon:OnTorghastEnable()
         PlayerChoice_LoadUI()
     end
 
-    ------------------------------------------------------------
-
     -- Save default PlayerChoiceToggleButton position
     ns.PlayerChoiceToggleButton = {
         point = {PlayerChoiceToggleButton:GetPoint()},
     }
 
+    ------------------------------------------------------------
+
     -- Prevent default frame from showing up
-    self:RawHook(PlayerChoiceFrame, "TryShow", function() end, true)
+    local TryShow = PlayerChoiceFrame.TryShow
+    self:RawHook(PlayerChoiceFrame, "TryShow", function()
+        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then
+            TryShow(PlayerChoiceFrame)
+        end
+    end, true)
+
+    ------------------------------------------------------------
 
     -- Control PlayerChoiceToggleButton position
     self:SetButtonMovable("Torghast", PlayerChoiceToggleButton, true)
     self:SetFramePoint("Torghast", PlayerChoiceToggleButton)
     self:HookScript(PlayerChoiceToggleButton, "OnUpdate", function()
-        if not IsShiftKeyDown() then -- shift to move button
+        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then
+            return
+        elseif not IsShiftKeyDown() then -- shift to move button
             addon:SetFramePoint("Torghast", PlayerChoiceToggleButton)
         end
     end)
 
+    ------------------------------------------------------------
+
     -- Hook PlayerChoiceToggleButton to replace PlayerChoiceFrame
     self:HookScript(PlayerChoiceToggleButton, "OnClick", function()
-        if not IsShiftKeyDown() then -- shift to move button
+        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then
+            return
+        elseif not IsShiftKeyDown() then -- shift to move button
             addon:PlayerChoiceToggleButton_OnClick()
         end
     end, true)
