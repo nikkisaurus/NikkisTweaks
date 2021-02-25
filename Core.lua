@@ -74,7 +74,7 @@ function addon:OnInitialize()
                             enabled = true,
                             method = "IsQuestFlaggedCompleted",
                         },
-                        interface = {
+                        version = {
                             enabled = true,
                             method = "GetBuildInfo",
                         },
