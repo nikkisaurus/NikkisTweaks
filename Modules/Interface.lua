@@ -12,9 +12,7 @@ function addon:OnInterfaceEnable()
     ------------------------------------------------------------
 
     self:HookScript(InterfaceOptionsFrameAddOns, "OnMouseWheel", function(self, direction)
-        if not Interface.addonScroll then
-            return
-        end
+        if not Interface.addonScroll then return end
 
         if direction == 1 then
             InterfaceOptionsFrameAddOnsListScrollBar.ScrollUpButton:Click()
@@ -27,9 +25,7 @@ function addon:OnInterfaceEnable()
 
     for index, button in pairs(InterfaceOptionsFrameAddOns.buttons) do
         self:HookScript(button, "OnDoubleClick", function(self)
-        if not Interface.addonDblClick then
-            return
-        end
+            if not Interface.addonDblClick then return end
             self:toggleFunc()
         end)
     end

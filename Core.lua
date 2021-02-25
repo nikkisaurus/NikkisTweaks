@@ -61,6 +61,11 @@ function addon:OnInitialize()
                     reportGroup = true, -- "Control+RightButton"
                 },
 
+                TalentSpecializations = {
+                    enabled = true,
+                    dblClick = true,
+                },
+
                 Torghast = {
                     enabled = true,
                     -- PlayerChoiceFrame, PlayerChoiceToggleButton

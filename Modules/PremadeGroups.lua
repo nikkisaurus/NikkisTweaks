@@ -59,9 +59,7 @@ function addon:OnPremadeGroupsEnable()
 
     -- Double click invite to accept
     self:HookScript(LFGListInviteDialog, "OnMouseUp", function(self)
-        if not PremadeGroups.dblClick.invite then
-            return
-        end
+        if not PremadeGroups.dblClick.invite then return end
         if timer < time() then
             startTimer = false
         end
@@ -78,9 +76,7 @@ function addon:OnPremadeGroupsEnable()
 
     -- Close PVEFrame after accepting invite
     self:HookScript(LFGListInviteDialog.AcceptButton, "OnClick", function()
-        if not PremadeGroups.closePVEFrame then
-            return
-        end
+        if not PremadeGroups.closePVEFrame then return end
         PVEFrameCloseButton:Click()
     end)
 

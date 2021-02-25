@@ -38,9 +38,7 @@ function addon:OnTorghastEnable()
     self:SetButtonMovable("Torghast", PlayerChoiceToggleButton, true)
     self:SetFramePoint("Torghast", PlayerChoiceToggleButton)
     self:HookScript(PlayerChoiceToggleButton, "OnUpdate", function()
-        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then
-            return
-        elseif not IsShiftKeyDown() then -- shift to move button
+        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then return elseif not IsShiftKeyDown() then -- shift to move button
             addon:SetFramePoint("Torghast", PlayerChoiceToggleButton)
         end
     end)
@@ -49,9 +47,7 @@ function addon:OnTorghastEnable()
 
     -- Hook PlayerChoiceToggleButton to replace PlayerChoiceFrame
     self:HookScript(PlayerChoiceToggleButton, "OnClick", function()
-        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then
-            return
-        elseif not IsShiftKeyDown() then -- shift to move button
+        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then return elseif not IsShiftKeyDown() then -- shift to move button
             addon:PlayerChoiceToggleButton_OnClick()
         end
     end, true)
