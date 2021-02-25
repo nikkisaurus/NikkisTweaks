@@ -9,7 +9,7 @@ function addon:OnInitialize()
 
     local defaults = {
         char = {
-            premadeGroups = {
+            PremadeGroups = {
                 roles = {
                     current = true,
                     Damager = false,
@@ -48,16 +48,17 @@ function addon:OnInitialize()
 
                 PremadeGroups = {
                     enabled = true,
+                    app = {
+                        skip = true,
+                        override = "Control", -- "Alt", "Control", "Shift"
+                    },
                     closePVEFrame = true,
                     dblClick = {
                         category = true,
                         group = true,
                         invite = true,
                     },
-                    app = {
-                        skip = true,
-                        override = "Control", -- "Alt", "Control", "Shift"
-                    },
+                    reportGroup = true, -- "Control+RightButton"
                 },
 
                 Torghast = {
@@ -65,9 +66,9 @@ function addon:OnInitialize()
                     -- PlayerChoiceFrame, PlayerChoiceToggleButton
                     ["**"] = {
                         point = false, -- {"TOP", ...}
-                        width = false,
                         height = false,
                         savePoint = true,
+                        width = false,
                     },
                 },
             },
