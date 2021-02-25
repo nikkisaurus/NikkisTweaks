@@ -48,6 +48,7 @@ function addon:OnInitialize()
 
                 PremadeGroups = {
                     enabled = true,
+                    closePVEFrame = true,
                     dblClick = {
                         category = true,
                         group = true,
