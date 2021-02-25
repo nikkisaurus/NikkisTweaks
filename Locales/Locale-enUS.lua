@@ -5,3 +5,4 @@ LibStub("LibAddonUtils-1.0"):Embed(addon)
 
 --*------------------------------------------------------------------------
 
+L["Pending Anima Power"] = true

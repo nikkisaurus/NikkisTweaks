@@ -64,12 +64,9 @@ function addon:OnInitialize()
                     -- PlayerChoiceFrame, PlayerChoiceToggleButton
                     ["**"] = {
                         point = false, -- {"TOP", ...}
+                        width = false,
+                        height = false,
                         savePoint = true,
-                        scale = 1,
-                    },
-
-                    PlayerChoiceFrame = {
-                        modifier = "Control",
                     },
                 },
             },
@@ -110,6 +107,22 @@ end
 
 ------------------------------------------------------------
 
+function addon:SetButtonMovable(module, frame, movable)
+    frame:SetMovable(movable)
+
+    if movable then
+        self:HookScript(frame, "OnMouseDown", function() if IsShiftKeyDown() then OnDragStart(frame) end end)
+        self:HookScript(frame, "OnMouseUp", function() OnDragStop(module, frame) end)
+        self:HookScript(frame, "OnHide", function() OnDragStop(module, frame) end)
+    else
+        self:Unhook(frame, "OnMouseDown")
+        self:Unhook(frame, "OnMouseUp")
+        self:Unhook(frame, "OnHide")
+    end
+end
+
+------------------------------------------------------------
+
 function addon:SetFrameMovable(module, frame, movable)
     frame:EnableMouse(movable)
     frame:SetMovable(movable)
@@ -118,9 +131,15 @@ function addon:SetFrameMovable(module, frame, movable)
 
     ------------------------------------------------------------
 
-	frame:HookScript("OnDragStart", OnDragStart)
-	frame:HookScript("OnDragStop", function() OnDragStop(module, frame) end)
-	frame:HookScript("OnHide", function() OnDragStop(module, frame) end)
+    if movable then
+        self:HookScript(frame, "OnDragStart", OnDragStart)
+        self:HookScript(frame, "OnDragStop", function() OnDragStop(module, frame) end)
+        self:HookScript(frame, "OnHide", function() OnDragStop(module, frame) end)
+    else
+        self:Unhook(frame, "OnDragStart")
+        self:Unhook(frame, "OnDragStop")
+        self:Unhook(frame, "OnHide")
+    end
 end
 
 ------------------------------------------------------------
