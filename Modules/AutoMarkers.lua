@@ -59,7 +59,7 @@ end
 function addon:MarkTanks()
     for i = 1, GetNumGroupMembers() do
         local unitName, _, _, _, _, _, _, _, _, _, _, role = GetRaidRosterInfo(i)
-        local hasIcon = GetRaidTargetIndex(unitName)
+        local hasIcon = unitName and GetRaidTargetIndex(unitName)
         if hasIcon then
             markers[hasIcon] = unitName
             if role == "TANK" then

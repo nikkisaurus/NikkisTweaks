@@ -120,7 +120,6 @@ function addon:PlayerChoiceToggleButton_OnClick()
         end)
 
         self:HookScript(choiceFrame.frame, "OnUpdate", function(self)
-            for k, v in pairs(self.obj.localstatus) do print(k, v) end
             if Torghast.PlayerChoiceFrame.savePoint then
                 local width = self:GetWidth()
                 if Torghast.PlayerChoiceFrame.width ~= width then
@@ -162,6 +161,14 @@ function addon:PlayerChoiceToggleButton_OnClick()
             ------------------------------------------------------------
 
             local optionInfo = C_PlayerChoice.GetPlayerChoiceOptionInfo(i)
+            if not optionInfo.description or optionInfo.description == "" then
+                choiceFrame:Release()
+                choiceFrame = nil
+                C_Timer.After(.25, function()
+                    addon:PlayerChoiceToggleButton_OnClick()
+                end)
+                return
+            end
 
             local optionContainer = AceGUI:Create("InlineGroup")
             optionContainer:SetRelativeWidth(1 / choiceInfo.numOptions)
