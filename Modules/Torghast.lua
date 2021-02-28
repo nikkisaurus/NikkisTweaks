@@ -11,67 +11,188 @@ local Torghast
 function addon:OnTorghastEnable()
     Torghast = self.db.global.modules.Torghast
 
+    self:TorghastLevelPickerFrame_OnMouseWheel()
+    self:PlayerChoiceToggleButton_Scale()
+    self:PlayerChoiceToggleButton_OnUpdate()
+    self:PlayerChoiceFrame_Scale()
+    self:PlayerChoiceFrame_TryShow()
+end
+
+------------------------------------------------------------
+
+function addon:OnTorghastDisable()
+    self:TorghastLevelPickerFrame_OnMouseWheel()
+    self:PlayerChoiceToggleButton_Scale()
+    self:PlayerChoiceToggleButton_OnUpdate()
+    self:PlayerChoiceFrame_Scale()
+    self:PlayerChoiceFrame_TryShow()
+end
+
+--*------------------------------------------------------------------------
+
+function addon:PlayerChoiceFrame_Scale()
+    -- Scale PlayerChoiceFrame
+    if not Torghast.enabled or Torghast.PlayerChoiceFrame.customFrame.enabled then
+        if self:IsFrameHooked("PlayerChoiceFrame", "TryShow") then
+            PlayerChoiceFrame:SetScale(1)
+            self:Unhook(PlayerChoiceFrame, "TryShow")
+        end
+        return
+    end
+
     ------------------------------------------------------------
 
     if not PlayerChoiceFrame then
         PlayerChoice_LoadUI()
     end
 
-    -- Save default PlayerChoiceToggleButton position
-    ns.PlayerChoiceToggleButton = {
-        point = {PlayerChoiceToggleButton:GetPoint()},
-    }
+    PlayerChoiceFrame:SetScale(Torghast.PlayerChoiceFrame.scale)
 
-    ------------------------------------------------------------
-
-    -- Prevent default frame from showing up
-    local TryShow = PlayerChoiceFrame.TryShow
-    self:RawHook(PlayerChoiceFrame, "TryShow", function()
+    self:Hook(PlayerChoiceFrame, "TryShow", function(frame)
         if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then
-            TryShow(PlayerChoiceFrame)
+            PlayerChoiceFrame:SetScale(1)
+            return
         end
-    end, true)
-
-    ------------------------------------------------------------
-
-    -- Control PlayerChoiceToggleButton position
-    self:SetButtonMovable("Torghast", PlayerChoiceToggleButton, true)
-    self:SetFramePoint("Torghast", PlayerChoiceToggleButton)
-    self:HookScript(PlayerChoiceToggleButton, "OnUpdate", function()
-        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then return elseif not IsShiftKeyDown() then -- shift to move button
-            addon:SetFramePoint("Torghast", PlayerChoiceToggleButton)
-        end
-    end)
-
-    ------------------------------------------------------------
-
-    -- Hook PlayerChoiceToggleButton to replace PlayerChoiceFrame
-    self:HookScript(PlayerChoiceToggleButton, "OnClick", function()
-        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then return elseif not IsShiftKeyDown() then -- shift to move button
-            addon:PlayerChoiceToggleButton_OnClick()
-        end
+        C_Timer.After(.01, function()
+            frame:SetScale(Torghast.PlayerChoiceFrame.scale)
+            if Torghast.PlayerChoiceFrame.scale ~= 1 then
+                -- Background animation doesn't scale properly and fixing it programmatically can cause errors that won't fix with even game repair
+                GlobalFXBackgroundModelScene:Hide()
+            end
+        end)
     end, true)
 end
 
 ------------------------------------------------------------
 
-function addon:OnTorghastDisable()
-    self:SetButtonMovable("Torghast", PlayerChoiceToggleButton)
-    self:Unhook(PlayerChoiceFrame, "TryShow")
-    self:Unhook(PlayerChoiceToggleButton, "OnClick")
-    self:Unhook(PlayerChoiceToggleButton, "OnUpdate")
+function addon:PlayerChoiceToggleButton_Scale()
+    -- Scale PlayerChoiceToggleButton
+    if not Torghast.enabled then
+        if self:IsFrameHooked("PlayerChoiceToggleButton", "OnShow") then
+            PlayerChoiceToggleButton:SetScale(1)
+            self:Unhook(PlayerChoiceToggleButton, "OnShow")
+        end
+        return
+    end
+
+    ------------------------------------------------------------
+
+    if not PlayerChoiceToggleButton then
+        PlayerChoice_LoadUI()
+    end
+
+    PlayerChoiceToggleButton:SetScale(Torghast.PlayerChoiceToggleButton.scale)
+
+    self:HookScript(PlayerChoiceToggleButton, "OnShow", function(frame)
+        frame:SetScale(Torghast.PlayerChoiceToggleButton.scale)
+    end)
+end
+
+--*------------------------------------------------------------------------
+
+function addon:TorghastLevelPickerFrame_OnMouseWheel()
+    -- Enable mousewheel on TorghastLevelPickerFrame to scroll through level pages
+    if not Torghast.enabled or not Torghast.TorghastLevelPickerFrame.enableMouseWheel then
+        if self:IsFrameHooked("TorghastLevelPickerFrame", "OnMouseWheel") then
+            self:Unhook(TorghastLevelPickerFrame, "OnMouseWheel")
+        end
+        return
+    end
+
+    ------------------------------------------------------------
+
+    if not TorghastLevelPickerFrame then
+        LoadAddOn("Blizzard_TorghastLevelPicker")
+    end
+
+    self:HookScript(TorghastLevelPickerFrame, "OnMouseWheel", function(frame, direction)
+        if direction == 1 then
+            frame.Pager.NextPage:Click()
+        else
+            frame.Pager.PreviousPage:Click()
+        end
+    end)
+end
+
+------------------------------------------------------------
+
+function addon:PlayerChoiceToggleButton_OnUpdate()
+    -- Allow PlayerChoiceToggleButton to be moved
+    if not Torghast.enabled or not Torghast.PlayerChoiceToggleButton.position.enabled then
+        if self:IsFrameHooked("PlayerChoiceToggleButton", "OnUpdate") then
+            self:SetFramePoint("Torghast", PlayerChoiceToggleButton)
+            self:SetButtonMovable("Torghast", PlayerChoiceToggleButton)
+            self:Unhook(PlayerChoiceToggleButton, "OnUpdate")
+        end
+        return
+    end
+
+    ------------------------------------------------------------
+
+    if not PlayerChoiceToggleButton then
+        PlayerChoice_LoadUI()
+    end
+
+    self:SetButtonMovable("Torghast", PlayerChoiceToggleButton, true)
+    self:SetFramePoint("Torghast", PlayerChoiceToggleButton)
+
+    self:HookScript(PlayerChoiceToggleButton, "OnUpdate", function(frame)
+        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then return
+        elseif not IsShiftKeyDown() then -- shift to move button
+            addon:SetFramePoint("Torghast", frame)
+        end
+    end)
+end
+
+------------------------------------------------------------
+
+function addon:PlayerChoiceFrame_TryShow()
+    -- Replace Torghast anima power choice frame
+    if not Torghast.enabled or not Torghast.PlayerChoiceFrame.customFrame.enabled then
+        if self:IsFrameHooked("PlayerChoiceFrame", "TryShow") then
+            self:Unhook(PlayerChoiceFrame, "TryShow")
+        end
+        if self:IsFrameHooked("PlayerChoiceToggleButton", "OnClick") then
+            self:Unhook(PlayerChoiceToggleButton, "OnClick")
+        end
+        return
+    end
+
+    ------------------------------------------------------------
+
+    if not PlayerChoiceFrame then
+        PlayerChoice_LoadUI()
+    end
+
+    self:HookScript(PlayerChoiceToggleButton, "OnClick", function(frame)
+        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then return elseif not IsShiftKeyDown() then -- shift to move button
+            self:PlayerChoiceToggleButton_OnClick()
+        end
+    end, true)
+
+    ------------------------------------------------------------
+
+    -- Prevent default frame from showing up
+    local TryShow = PlayerChoiceFrame.TryShow
+    self:RawHook(PlayerChoiceFrame, "TryShow", function(frame)
+        if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then
+            TryShow(frame)
+        end
+    end, true)
 end
 
 --*------------------------------------------------------------------------
 
 local function GetRarityDescriptionString(rarity)
-	if (rarity == Enum.PlayerChoiceRarity.Common) then
+    local Rarity = Enum.PlayerChoiceRarity
+
+	if (rarity == Rarity.Common) then
 		return PLAYER_CHOICE_QUALITY_STRING_COMMON
-	elseif (rarity == Enum.PlayerChoiceRarity.Uncommon) then
+	elseif (rarity == Rarity.Uncommon) then
 		return PLAYER_CHOICE_QUALITY_STRING_UNCOMMON
-	elseif (rarity == Enum.PlayerChoiceRarity.Rare) then
+	elseif (rarity == Rarity.Rare) then
 		return PLAYER_CHOICE_QUALITY_STRING_RARE
-	elseif (rarity == Enum.PlayerChoiceRarity.Epic) then
+	elseif (rarity == Rarity.Epic) then
 		return PLAYER_CHOICE_QUALITY_STRING_EPIC
 	end
 end
@@ -80,7 +201,9 @@ end
 
 local function ChoiceFrameOptionTooltip_OnEnter(widget, optionInfo)
     if not widget or not optionInfo then return end
+
     local r, g, b = optionInfo.rarityColor:GetRGBA()
+
     GameTooltip:SetOwner(widget.frame, "ANCHOR_NONE")
     GameTooltip:SetPoint("LEFT", widget.frame, "RIGHT", 5, 0)
     GameTooltip:AddLine(optionInfo.header, r, g, b)
@@ -114,46 +237,49 @@ function addon:PlayerChoiceToggleButton_OnClick()
         tinsert(UISpecialFrames, "NikkisTweaks_PlayerChoiceFrame")
         choiceFrame.frame:SetClampedToScreen(true)
 
-        choiceFrame:SetCallback("OnClose", function(self, event, ...)
+        choiceFrame:SetCallback("OnClose", function(frame)
             choiceFrame:Release()
             choiceFrame = nil
         end)
 
-        self:HookScript(choiceFrame.frame, "OnUpdate", function(self)
-            if Torghast.PlayerChoiceFrame.savePoint then
-                local width = self:GetWidth()
-                if Torghast.PlayerChoiceFrame.width ~= width then
-                    Torghast.PlayerChoiceFrame.width = width
+        self:HookScript(choiceFrame.frame, "OnUpdate", function(frame)
+            if Torghast.PlayerChoiceFrame.customFrame.position.enabled then
+                local width = frame:GetWidth()
+                if Torghast.PlayerChoiceFrame.customFrame.position.size.width ~= width then
+                    Torghast.PlayerChoiceFrame.customFrame.position.size.width = width
                 end
 
                 ------------------------------------------------------------
 
-                local height = self:GetHeight()
-                if Torghast.PlayerChoiceFrame.height ~= height then
-                    Torghast.PlayerChoiceFrame.height = height
+                local height = frame:GetHeight()
+                if Torghast.PlayerChoiceFrame.customFrame.position.size.height ~= height then
+                    Torghast.PlayerChoiceFrame.customFrame.position.size.height = height
                 end
 
                 ------------------------------------------------------------
 
-                Torghast.PlayerChoiceFrame.point = {self:GetPoint()}
+                Torghast.PlayerChoiceFrame.customFrame.position.point = {frame:GetPoint()}
             end
 
-            self.obj:DoLayout()
+            frame.obj:DoLayout()
         end)
 
-        choiceFrame:SetCallback("OnRelease", function(self)
-            addon:Unhook(self.frame, "OnUpdate")
+        choiceFrame:SetCallback("OnRelease", function(frame)
+            addon:Unhook(frame.frame, "OnUpdate")
             choiceFrame = nil
         end)
 
         ------------------------------------------------------------
 
         for i = 1, choiceInfo.numOptions do
-            choiceFrame:SetWidth(Torghast.PlayerChoiceFrame.width or (200 * choiceInfo.numOptions))
-            choiceFrame:SetHeight(Torghast.PlayerChoiceFrame.height or 400)
+            choiceFrame:SetWidth(Torghast.PlayerChoiceFrame.customFrame.position.size.width or (200 * choiceInfo.numOptions))
+            choiceFrame:SetHeight(Torghast.PlayerChoiceFrame.customFrame.position.size.height or 400)
             choiceFrame:ClearAllPoints()
-            if Torghast.PlayerChoiceFrame.savePoint and Torghast.PlayerChoiceFrame.point then
-                choiceFrame:SetPoint(unpack(Torghast.PlayerChoiceFrame.point))
+
+            if Torghast.PlayerChoiceFrame.customFrame.position.enabled and Torghast.PlayerChoiceFrame.customFrame.position.point then
+                local point = Torghast.PlayerChoiceFrame.customFrame.position.point
+                point = #point > 0 and point or {"BOTTOM", PlayerChoiceToggleButton, "TOP", 0, 10}
+                choiceFrame:SetPoint(addon.unpack(point))
             else
                 choiceFrame:SetPoint("BOTTOM", PlayerChoiceToggleButton, "TOP", 0, 10)
             end
@@ -164,9 +290,11 @@ function addon:PlayerChoiceToggleButton_OnClick()
             if not optionInfo.description or optionInfo.description == "" then
                 choiceFrame:Release()
                 choiceFrame = nil
-                C_Timer.After(.25, function()
+
+                C_Timer.After(.25, function(frame)
                     addon:PlayerChoiceToggleButton_OnClick()
                 end)
+
                 return
             end
 
@@ -207,11 +335,11 @@ function addon:PlayerChoiceToggleButton_OnClick()
             optionIcon:SetImageSize(50, 50)
             option:AddChild(optionIcon)
 
-            optionIcon:SetCallback("OnEnter", function(self)
-                ChoiceFrameOptionTooltip_OnEnter(self, optionInfo)
+            optionIcon:SetCallback("OnEnter", function(frame)
+                ChoiceFrameOptionTooltip_OnEnter(frame, optionInfo)
             end)
 
-            optionIcon:SetCallback("OnLeave", function()
+            optionIcon:SetCallback("OnLeave", function(frame)
                 ChoiceFrameOptionTooltip_OnLeave()
             end)
 
@@ -259,13 +387,13 @@ function addon:PlayerChoiceToggleButton_OnClick()
 
             _G["NikkisTweaks_PlayerChoiceFrame_Option"..i] = chooseOption
 
-            chooseOption:SetCallback("OnClick", function()
+            chooseOption:SetCallback("OnClick", function(frame)
                 local optID = optionInfo.responseIdentifier
                 SendPlayerChoiceResponse(optID)
                 choiceFrame:Release()
             end)
 
-            chooseOption:SetCallback("OnRelease", function()
+            chooseOption:SetCallback("OnRelease", function(frame)
                 _G["NikkisTweaks_PlayerChoiceFrame_Option"..i] = nil
             end)
 

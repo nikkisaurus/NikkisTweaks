@@ -88,12 +88,61 @@ function addon:OnInitialize()
 
                 Torghast = {
                     enabled = true,
-                    -- PlayerChoiceFrame, PlayerChoiceToggleButton
-                    ["**"] = {
-                        point = false, -- {"TOP", ...}
-                        height = false,
-                        savePoint = true,
-                        width = false,
+
+                    PlayerChoiceFrame = {
+                        customFrame = {
+                            enabled = true,
+                            keybinds = {
+                                -- option1, option2, option3, option4
+                                ["**"] = {
+                                    Alt = true,
+                                    Control = true,
+                                    Shift = true,
+                                    button = "",
+                                },
+                            },
+                            position = {
+                                enabled = true,
+                                point = false, -- {"TOP", ...}
+                                size = {
+                                    height = false,
+                                    width = false,
+                                },
+                            },
+                        },
+                        position = {
+                            enabled = true,
+                            point = false, -- {"TOP", ...}
+                            size = {
+                                height = false,
+                                width = false,
+                            },
+                        },
+                        scale = 1,
+                    },
+
+                    PlayerChoiceToggleButton = {
+                        position = {
+                            enabled = true,
+                            point = false, -- {"TOP", ...}
+                            size = {
+                                height = false,
+                                width = false,
+                            },
+                        },
+                        scale = 1,
+
+                    },
+
+                    TorghastLevelPickerFrame = {
+                        climbKeybind = {
+                            enabled = true,
+                            Alt = true,
+                            Control = true,
+                            Shift = true,
+                            button = "C",
+                        },
+                        enableMouseWheel = true,
                     },
                 },
             },
@@ -127,8 +176,8 @@ local function OnDragStop(module, frame)
     frame:StopMovingOrSizing()
 
     local name = frame:GetName()
-    if addon.db.global.modules[module][name].savePoint then
-        addon.db.global.modules[module][name].point = {frame:GetPoint()}
+    if addon.db.global.modules[module][name].position.enabled then
+        addon.db.global.modules[module][name].position.point = {frame:GetPoint()}
     end
 end
 
@@ -172,13 +221,25 @@ end
 ------------------------------------------------------------
 
 function addon:SetFramePoint(module, frame)
+    local name = frame:GetName()
+    if not ns[name] or #ns[name].point == 0 then
+        ns[name] = {
+            point = {frame:GetPoint()}
+        }
+    end
+
     frame:ClearAllPoints()
 
-    local name = frame:GetName()
     local frameDB = self.db.global.modules[module][name]
-    if frameDB.savePoint and frameDB.point then
-        frame:SetPoint(unpack(frameDB.point))
-    else
+    if frameDB.position.enabled and frameDB.position.point and #frameDB.position.point > 0 then
+        frame:SetPoint(unpack(frameDB.position.point))
+    elseif ns[name] and #ns[name].point > 0 then
         frame:SetPoint(unpack(ns[name].point))
     end
+end
+
+--*------------------------------------------------------------------------
+
+function addon:IsFrameHooked(frame, method)
+    return method and (self.hooks[frame] and self.hooks[frame][method]) or self.hooks[frame]
 end
