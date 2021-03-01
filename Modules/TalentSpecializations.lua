@@ -31,6 +31,8 @@ end
 ------------------------------------------------------------
 
 function addon:OnTalentSpecializationsDisable()
+    TalentSpecializations = self.db.global.modules.TalentSpecializations
+
     for i = 1, 4 do
         local button = _G["PlayerTalentFrameSpecializationSpecButton"..i]
         if button then

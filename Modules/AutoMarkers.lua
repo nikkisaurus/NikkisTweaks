@@ -14,6 +14,7 @@ end
 ------------------------------------------------------------
 
 function addon:OnAutoMarkersDisable()
+    AutoMarkers = self.db.global.modules.AutoMarkers
     self:UnregisterEvent("PLAYER_ROLES_ASSIGNED")
 end
 

@@ -6,7 +6,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("NikkisTweaks", true)
 
 function addon:OnInitialize()
     -- NikkisTweaksDB = nil
-
     local defaults = {
         char = {
             PremadeGroups = {
@@ -150,6 +149,7 @@ function addon:OnInitialize()
     }
 
     self.db = LibStub("AceDB-3.0"):New("NikkisTweaksDB", defaults)
+    self:InitializeOptions()
 end
 
 ------------------------------------------------------------

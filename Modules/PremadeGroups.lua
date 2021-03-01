@@ -91,6 +91,8 @@ end
 ------------------------------------------------------------
 
 function addon:OnPremadeGroupsDisable()
+    PremadeGroups = self.db.global.modules.PremadeGroups
+
     self:Unhook(LFGListFrame.CategorySelection, "OnShow")
     for _, button in pairs(LFGListFrame.CategorySelection.CategoryButtons) do
         addon:Unhook(button, "OnDoubleClick")

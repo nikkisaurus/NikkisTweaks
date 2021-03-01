@@ -22,6 +22,10 @@ function addon:OnSlashCommandsEnable()
 
     ------------------------------------------------------------
 
+    self:RegisterChatCommand("nt", "SlashCommandFunc")
+
+    ------------------------------------------------------------
+
     -- https://www.wowinterface.com/forums/showthread.php?t=46934
     tooltipScanner = CreateFrame("GameTooltip", "NikkisTweaks_QuestIDTooltipScanner", UIParent, "GameTooltipTemplate")
     tooltipScanner:SetScript("OnTooltipSetQuest", function(self)
@@ -36,6 +40,8 @@ end
 ------------------------------------------------------------
 
 function addon:OnSlashCommandsDisable()
+    SlashCommands = self.db.global.modules.SlashCommands
+
     for command in pairs(SlashCommands.commands) do
         self:UnregisterChatCommand(command)
     end
@@ -58,4 +64,10 @@ function addon:IsQuestFlaggedCompleted(questID)
     tooltipScanner.questID = questID
     tooltipScanner:SetOwner(UIParent, "ANCHOR_NONE")
     tooltipScanner:SetHyperlink("quest:" .. questID)
+end
+
+------------------------------------------------------------
+
+function addon:SlashCommandFunc(input)
+    LibStub("AceConfigDialog-3.0"):Open(addonName)
 end

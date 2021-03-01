@@ -19,10 +19,11 @@ Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\LibAddonUtils\LibAddonUtils.xml
 
-# Locales
+# Core
 Locales\Locale-enUS.lua
-
 Core.lua
+
+# Modules
 Modules\AutoMarkers.lua
 Modules\Covenant.lua
 Modules\Interface.lua
@@ -31,4 +32,14 @@ Modules\QuestLog.lua
 Modules\SlashCommands.lua
 Modules\TalentSpecializations.lua
 Modules\Torghast.lua
-Options.lua
+
+# Options
+Options\Options.lua
+Options\AutoMarkers.lua
+Options\Covenant.lua
+Options\Interface.lua
+Options\PremadeGroups.lua
+Options\QuestLog.lua
+Options\SlashCommands.lua
+Options\TalentSpecializations.lua
+Options\Torghast.lua

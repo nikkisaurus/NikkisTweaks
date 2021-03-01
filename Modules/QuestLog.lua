@@ -27,5 +27,7 @@ end
 ------------------------------------------------------------
 
 function addon:OnQuestLogDisable()
+    QuestLog = self.db.global.modules.QuestLog
+
     self:Unhook("QuestMapLogTitleButton_OnClick")
 end

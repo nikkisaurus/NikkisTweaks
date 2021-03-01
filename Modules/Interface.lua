@@ -34,6 +34,8 @@ end
 ------------------------------------------------------------
 
 function addon:OnInterfaceDisable()
+    Interface = self.db.global.modules.Interface
+
     self:Unhook(InterfaceOptionsFrameAddOns, "OnMouseWheel")
 
     for index, button in pairs(InterfaceOptionsFrameAddOns.buttons) do

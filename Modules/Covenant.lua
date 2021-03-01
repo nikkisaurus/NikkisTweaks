@@ -43,6 +43,8 @@ end
 ------------------------------------------------------------
 
 function addon:OnCovenantDisable()
+    Covenant = self.db.global.modules.Covenant
+
     self:UnregisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED")
     self:SetFrameMovable("Covenant", CovenantSanctumFrame)
     self:SetFramePoint("Covenant", CovenantSanctumFrame)

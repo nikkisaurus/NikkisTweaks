@@ -5,9 +5,24 @@ LibStub("LibAddonUtils-1.0"):Embed(addon)
 
 --*------------------------------------------------------------------------
 
+L.addon = "Nikki's Tweaks"
+
+-- Modules
+L.AutoMarkers = "Auto Markers"
+L.Covenant = "Covenant"
+L.Interface = "Interface"
+L.PremadeGroups = "Premade Groups"
+L.QuestLog = "Quest Log"
+L.SlashCommands = "Slash Commands"
+L.TalentSpecializations = "Talent Specializations"
+L.Torghast = "Torghast"
+
+------------------------------------------------------------
+
 L["damage"] = true
 L["healer"] = true
 L["Interface version %d"] = true
+L["Modules"] = true
 L["not"] = true
 L["Pending Anima Power"] = true
 L["Quest abandoned: \"%s\""] = true

@@ -21,6 +21,8 @@ end
 ------------------------------------------------------------
 
 function addon:OnTorghastDisable()
+    Torghast = self.db.global.modules.Torghast
+
     self:TorghastLevelPickerFrame_OnMouseWheel()
     self:PlayerChoiceToggleButton_Scale()
     self:PlayerChoiceToggleButton_OnUpdate()
