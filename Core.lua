@@ -89,27 +89,17 @@ function addon:OnInitialize()
                     enabled = true,
 
                     PlayerChoiceFrame = {
-                        customFrame = {
-                            enabled = true,
-                            keybinds = {
-                                -- option1, option2, option3, option4
-                                ["**"] = {
-                                    Alt = true,
-                                    Control = true,
-                                    Shift = true,
-                                    button = "",
-                                },
-                            },
-                            position = {
-                                enabled = true,
-                                point = false, -- {"TOP", ...}
-                                size = {
-                                    height = false,
-                                    width = false,
-                                },
+                        customFrame = true,
+                        keybinds = {
+                            -- option1, option2, option3, option4
+                            ["**"] = {
+                                Alt = true,
+                                Control = true,
+                                Shift = true,
+                                button = "",
                             },
                         },
-                        position = {
+                       position = {
                             enabled = true,
                             point = false, -- {"TOP", ...}
                             size = {
@@ -202,6 +192,7 @@ end
 function addon:SetFrameMovable(module, frame, movable)
     frame:EnableMouse(movable)
     frame:SetMovable(movable)
+    frame:SetUserPlaced(movable)
 	frame:SetClampedToScreen(true)
 	frame:RegisterForDrag(movable and "LeftButton")
 
@@ -211,6 +202,31 @@ function addon:SetFrameMovable(module, frame, movable)
         self:HookScript(frame, "OnDragStart", OnDragStart)
         self:HookScript(frame, "OnDragStop", function() OnDragStop(module, frame) end)
         self:HookScript(frame, "OnHide", function() OnDragStop(module, frame) end)
+    else
+        self:Unhook(frame, "OnDragStart")
+        self:Unhook(frame, "OnDragStop")
+        self:Unhook(frame, "OnHide")
+    end
+end
+
+------------------------------------------------------------
+
+function addon:SetParentFrameMovable(module, parent, frame, movable)
+    frame:EnableMouse(movable)
+	frame:RegisterForDrag(movable and "LeftButton")
+
+    parent:EnableMouse(movable)
+    parent:SetMovable(movable)
+    parent:SetUserPlaced(movable)
+	parent:SetClampedToScreen(true)
+	parent:RegisterForDrag(movable and "LeftButton")
+
+    ------------------------------------------------------------
+
+    if movable then
+        self:HookScript(frame, "OnDragStart", function() OnDragStart(parent) end)
+        self:HookScript(frame, "OnDragStop", function() OnDragStop(module, parent) end)
+        self:HookScript(frame, "OnHide", function() OnDragStop(module, parent) end)
     else
         self:Unhook(frame, "OnDragStart")
         self:Unhook(frame, "OnDragStop")
@@ -231,10 +247,24 @@ function addon:SetFramePoint(module, frame)
     frame:ClearAllPoints()
 
     local frameDB = self.db.global.modules[module][name]
-    if frameDB.position.enabled and frameDB.position.point and #frameDB.position.point > 0 then
+    if self.db.global.modules[module].enabled and frameDB.position.enabled and frameDB.position.point and #frameDB.position.point > 0 then
         frame:SetPoint(unpack(frameDB.position.point))
     elseif ns[name] and #ns[name].point > 0 then
         frame:SetPoint(unpack(ns[name].point))
+    end
+end
+
+------------------------------------------------------------
+
+function addon:SetFrameScale(frame, scale, animation)
+    frame:SetScale(scale)
+    if not animation then return end
+
+    -- Animations don't scale properly and fixing them programmatically can cause errors that won't fix with even game repair
+    if scale ~= 1 then
+        animation:Hide()
+    else
+        animation:Show()
     end
 end
 

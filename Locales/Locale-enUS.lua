@@ -19,14 +19,27 @@ L.Torghast = "Torghast"
 
 ------------------------------------------------------------
 
+L["Set movable"] = true
+L["Allows default PlayerChoiceFrame to be moved"] = true
+L["Allows PlayerChoiceToggleButton to be moved by shift+drag"] = true
+L["Changes the scale of PlayerChoiceFrame"] = true
+L["Changes the scale of PlayerChoiceToggleButton"] = true
 L["damage"] = true
+L["Enable mousewheel"] = true
+L["Enables mousewheel scrolling on the TorghastLevelPickerFrame to change pages"] = true
+L["Enables the %s module"] = true
 L["healer"] = true
 L["Interface version %d"] = true
+L["Module Control"] = true
 L["Modules"] = true
+L["Overrides the default PlayerChoiceFrame with a custom frame"] = true
 L["not"] = true
 L["Pending Anima Power"] = true
 L["Quest abandoned: \"%s\""] = true
 L["Quest \"%s\" (%s) %s%s completed|r"] = true
+L["Scale"] = true
+L["Set movable"] = true
 L["Signed up for \"%s (%s)\" as current role: %s"] = true
 L["Signed up for \"%s (%s)\" as roles: %s%s%s%s%s"] = true
 L["tank"] = true
+L["Use custom frame"] = true

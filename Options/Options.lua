@@ -22,16 +22,26 @@ function addon:GetOptions()
                 order = 1,
                 type = "group",
                 name = L["Modules"],
-                args = {},
+                args = {
+                    moduleControl = {
+                        order = 1,
+                        type = "group",
+                        inline = true,
+                        name = L["Module Control"],
+                        args = {},
+                    },
+
+                },
             }
         },
     }
 
     for moduleName, module in addon.pairs(self.db.global.modules) do
-        self.options.args.modules.args["enable"..moduleName] = {
-            order = #self.options.args.modules.args + 1,
+        self.options.args.modules.args.moduleControl.args["enable"..moduleName] = {
+            order = #self.options.args.modules.args.moduleControl.args + 1,
             type = "toggle",
             name = L[moduleName],
+            desc = string.format(L["Enables the %s module"], L[moduleName]),
             get = function()
                 return module.enabled
             end,
@@ -49,7 +59,7 @@ function addon:GetOptions()
             order = #self.options.args.modules.args + 1,
             type = "group",
             name = L[moduleName],
-            childGroups = "select",
+            childGroups = "tab",
             args = self["Get"..moduleName.."Options"](self),
         }
     end

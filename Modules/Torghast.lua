@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("NikkisTweaks", true)
 local AceGUI = LibStub("AceGUI-3.0")
 
 local GetInstanceInfo = GetInstanceInfo
-local Torghast
+local Torghast, choiceFrame
 
 --*------------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ function addon:OnTorghastEnable()
     self:TorghastLevelPickerFrame_OnMouseWheel()
     self:PlayerChoiceToggleButton_Scale()
     self:PlayerChoiceToggleButton_OnUpdate()
-    self:PlayerChoiceFrame_Scale()
+    self:PlayerChoiceFrame_MoveAndScale()
     self:PlayerChoiceFrame_TryShow()
 end
 
@@ -26,18 +26,25 @@ function addon:OnTorghastDisable()
     self:TorghastLevelPickerFrame_OnMouseWheel()
     self:PlayerChoiceToggleButton_Scale()
     self:PlayerChoiceToggleButton_OnUpdate()
-    self:PlayerChoiceFrame_Scale()
+    self:PlayerChoiceFrame_MoveAndScale()
     self:PlayerChoiceFrame_TryShow()
 end
 
 --*------------------------------------------------------------------------
 
-function addon:PlayerChoiceFrame_Scale()
-    -- Scale PlayerChoiceFrame
-    if not Torghast.enabled or Torghast.PlayerChoiceFrame.customFrame.enabled then
-        if self:IsFrameHooked("PlayerChoiceFrame", "TryShow") then
-            PlayerChoiceFrame:SetScale(1)
-            self:Unhook(PlayerChoiceFrame, "TryShow")
+function addon:PlayerChoiceFrame_MoveAndScale()
+    -- Scale and move PlayerChoiceFrame
+    if not Torghast.enabled or Torghast.PlayerChoiceFrame.customFrame then
+        if self:IsFrameHooked(PlayerChoiceFrame, "OnShow") then
+            self:SetFramePoint("Torghast", PlayerChoiceFrame)
+            for i = 1, 4 do
+                self:SetParentFrameMovable("Torghast", PlayerChoiceFrame, PlayerChoiceFrame["Option"..i].MouseOverOverride)
+            end
+            self:SetFrameScale(PlayerChoiceFrame, 1, GlobalFXBackgroundModelScene)
+            self:Unhook(PlayerChoiceFrame, "OnShow")
+        end
+        if self:IsFrameHooked(PlayerChoiceFrame, "OnHide") then
+            self:Unhook(PlayerChoiceFrame, "OnHide")
         end
         return
     end
@@ -48,20 +55,30 @@ function addon:PlayerChoiceFrame_Scale()
         PlayerChoice_LoadUI()
     end
 
-    PlayerChoiceFrame:SetScale(Torghast.PlayerChoiceFrame.scale)
+    for i = 1, 4 do
+        self:SetParentFrameMovable("Torghast", PlayerChoiceFrame, PlayerChoiceFrame["Option"..i].MouseOverOverride, true)
+    end
+    PlayerChoiceFrame:ClearAllPoints()
+    -- self:SetFramePoint("Torghast", PlayerChoiceFrame)
+    self:SetFrameScale(PlayerChoiceFrame, Torghast.PlayerChoiceFrame.scale, GlobalFXBackgroundModelScene)
 
-    self:Hook(PlayerChoiceFrame, "TryShow", function(frame)
+    ------------------------------------------------------------
+
+    self:HookScript(PlayerChoiceFrame, "OnShow", function(frame)
         if GetInstanceInfo() ~= "Torghast, Tower of the Damned" then
-            PlayerChoiceFrame:SetScale(1)
+            self:SetFrameScale(PlayerChoiceFrame, 1, GlobalFXBackgroundModelScene)
             return
         end
         C_Timer.After(.01, function()
-            frame:SetScale(Torghast.PlayerChoiceFrame.scale)
-            if Torghast.PlayerChoiceFrame.scale ~= 1 then
-                -- Background animation doesn't scale properly and fixing it programmatically can cause errors that won't fix with even game repair
-                GlobalFXBackgroundModelScene:Hide()
-            end
+            self:SetFramePoint("Torghast", PlayerChoiceFrame)
+            self:SetFrameScale(frame, Torghast.PlayerChoiceFrame.scale, GlobalFXBackgroundModelScene)
         end)
+    end, true)
+
+    self:HookScript(PlayerChoiceFrame, "OnHide", function(frame)
+        if GetInstanceInfo() == "Torghast, Tower of the Damned" then
+            frame:ClearAllPoints()
+        end
     end, true)
 end
 
@@ -70,7 +87,7 @@ end
 function addon:PlayerChoiceToggleButton_Scale()
     -- Scale PlayerChoiceToggleButton
     if not Torghast.enabled then
-        if self:IsFrameHooked("PlayerChoiceToggleButton", "OnShow") then
+        if self:IsFrameHooked(PlayerChoiceToggleButton, "OnShow") then
             PlayerChoiceToggleButton:SetScale(1)
             self:Unhook(PlayerChoiceToggleButton, "OnShow")
         end
@@ -86,7 +103,7 @@ function addon:PlayerChoiceToggleButton_Scale()
     PlayerChoiceToggleButton:SetScale(Torghast.PlayerChoiceToggleButton.scale)
 
     self:HookScript(PlayerChoiceToggleButton, "OnShow", function(frame)
-        frame:SetScale(Torghast.PlayerChoiceToggleButton.scale)
+        self:SetFrameScale(frame, Torghast.PlayerChoiceToggleButton.scale, GlobalFXMediumModelScene)
     end)
 end
 
@@ -95,7 +112,7 @@ end
 function addon:TorghastLevelPickerFrame_OnMouseWheel()
     -- Enable mousewheel on TorghastLevelPickerFrame to scroll through level pages
     if not Torghast.enabled or not Torghast.TorghastLevelPickerFrame.enableMouseWheel then
-        if self:IsFrameHooked("TorghastLevelPickerFrame", "OnMouseWheel") then
+        if self:IsFrameHooked(TorghastLevelPickerFrame, "OnMouseWheel") then
             self:Unhook(TorghastLevelPickerFrame, "OnMouseWheel")
         end
         return
@@ -120,10 +137,22 @@ end
 
 function addon:PlayerChoiceToggleButton_OnUpdate()
     -- Allow PlayerChoiceToggleButton to be moved
+    if Torghast.PlayerChoiceFrame.customFrame and PlayerChoiceFrame:IsVisible() then
+        PlayerChoiceFrame:TryHide()
+    end
+
     if not Torghast.enabled or not Torghast.PlayerChoiceToggleButton.position.enabled then
-        if self:IsFrameHooked("PlayerChoiceToggleButton", "OnUpdate") then
+        if self:IsFrameHooked(PlayerChoiceToggleButton, "OnUpdate") then
+            -- Reset PlayerChoiceToggleButton position
             self:SetFramePoint("Torghast", PlayerChoiceToggleButton)
             self:SetButtonMovable("Torghast", PlayerChoiceToggleButton)
+
+            -- Hide PlayerChoiceFrame
+            if choiceFrame then
+                choiceFrame:Release()
+                choiceFrame = nil
+            end
+
             self:Unhook(PlayerChoiceToggleButton, "OnUpdate")
         end
         return
@@ -150,13 +179,24 @@ end
 
 function addon:PlayerChoiceFrame_TryShow()
     -- Replace Torghast anima power choice frame
-    if not Torghast.enabled or not Torghast.PlayerChoiceFrame.customFrame.enabled then
-        if self:IsFrameHooked("PlayerChoiceFrame", "TryShow") then
+    if Torghast.PlayerChoiceFrame.customFrame and PlayerChoiceFrame:IsVisible() then
+        PlayerChoiceFrame:TryHide()
+    end
+
+    if not Torghast.enabled or not Torghast.PlayerChoiceFrame.customFrame then
+        if self:IsFrameHooked(PlayerChoiceFrame, "TryShow") then
             self:Unhook(PlayerChoiceFrame, "TryShow")
         end
-        if self:IsFrameHooked("PlayerChoiceToggleButton", "OnClick") then
+        if self:IsFrameHooked(PlayerChoiceToggleButton, "OnClick") then
             self:Unhook(PlayerChoiceToggleButton, "OnClick")
         end
+
+        -- Hide PlayerChoiceFrame
+        if choiceFrame then
+            choiceFrame:Release()
+            choiceFrame = nil
+        end
+
         return
     end
 
@@ -222,7 +262,6 @@ end
 
 --*------------------------------------------------------------------------
 
-local choiceFrame
 function addon:PlayerChoiceToggleButton_OnClick()
     if choiceFrame then
         choiceFrame:Release()
@@ -245,22 +284,22 @@ function addon:PlayerChoiceToggleButton_OnClick()
         end)
 
         self:HookScript(choiceFrame.frame, "OnUpdate", function(frame)
-            if Torghast.PlayerChoiceFrame.customFrame.position.enabled then
+            if Torghast.PlayerChoiceFrame.customFrame then
                 local width = frame:GetWidth()
-                if Torghast.PlayerChoiceFrame.customFrame.position.size.width ~= width then
-                    Torghast.PlayerChoiceFrame.customFrame.position.size.width = width
+                if Torghast.PlayerChoiceFrame.position.size.width ~= width then
+                    Torghast.PlayerChoiceFrame.position.size.width = width
                 end
 
                 ------------------------------------------------------------
 
                 local height = frame:GetHeight()
-                if Torghast.PlayerChoiceFrame.customFrame.position.size.height ~= height then
-                    Torghast.PlayerChoiceFrame.customFrame.position.size.height = height
+                if Torghast.PlayerChoiceFrame.position.size.height ~= height then
+                    Torghast.PlayerChoiceFrame.position.size.height = height
                 end
 
                 ------------------------------------------------------------
 
-                Torghast.PlayerChoiceFrame.customFrame.position.point = {frame:GetPoint()}
+                Torghast.PlayerChoiceFrame.position.point = {frame:GetPoint()}
             end
 
             frame.obj:DoLayout()
@@ -274,16 +313,15 @@ function addon:PlayerChoiceToggleButton_OnClick()
         ------------------------------------------------------------
 
         for i = 1, choiceInfo.numOptions do
-            choiceFrame:SetWidth(Torghast.PlayerChoiceFrame.customFrame.position.size.width or (200 * choiceInfo.numOptions))
-            choiceFrame:SetHeight(Torghast.PlayerChoiceFrame.customFrame.position.size.height or 400)
-            choiceFrame:ClearAllPoints()
+            choiceFrame:SetWidth(Torghast.PlayerChoiceFrame.position.size.width or (200 * choiceInfo.numOptions))
+            choiceFrame:SetHeight(Torghast.PlayerChoiceFrame.position.size.height or 400)
 
-            if Torghast.PlayerChoiceFrame.customFrame.position.enabled and Torghast.PlayerChoiceFrame.customFrame.position.point then
-                local point = Torghast.PlayerChoiceFrame.customFrame.position.point
-                point = #point > 0 and point or {"BOTTOM", PlayerChoiceToggleButton, "TOP", 0, 10}
+            choiceFrame:ClearAllPoints()
+            local point = Torghast.PlayerChoiceFrame.position.point
+            if point and #point > 0 then
                 choiceFrame:SetPoint(addon.unpack(point))
             else
-                choiceFrame:SetPoint("BOTTOM", PlayerChoiceToggleButton, "TOP", 0, 10)
+                choiceFrame:SetPoint("CENTER")
             end
 
             ------------------------------------------------------------
