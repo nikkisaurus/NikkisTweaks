@@ -9,6 +9,7 @@ L.addon = "Nikki's Tweaks"
 
 -- Modules
 L.AutoMarkers = "Auto Markers"
+L.ChatsToMSBTStreamer = "ChatsToMSBT Streamer"
 L.Covenant = "Covenant"
 L.Interface = "Interface"
 L.PremadeGroups = "Premade Groups"
@@ -37,6 +38,8 @@ L["not"] = true
 L["Pending Anima Power"] = true
 L["Quest abandoned: \"%s\""] = true
 L["Quest \"%s\" (%s) %s%s completed|r"] = true
+L["{redacted}"] = true
+L["Redacted"] = true
 L["Scale"] = true
 L["Set movable"] = true
 L["Signed up for \"%s (%s)\" as current role: %s"] = true

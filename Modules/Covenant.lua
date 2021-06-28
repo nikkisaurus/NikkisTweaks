@@ -44,6 +44,7 @@ end
 
 function addon:OnCovenantDisable()
     Covenant = self.db.global.modules.Covenant
+    if not CovenantSanctumFrame then return end
 
     self:UnregisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED")
     self:SetFrameMovable("Covenant", CovenantSanctumFrame)
