@@ -136,6 +136,10 @@ end
 ------------------------------------------------------------
 
 function addon:PlayerChoiceToggleButton_OnUpdate()
+    if not PlayerChoiceFrame then
+        PlayerChoice_LoadUI()
+    end
+
     -- Allow PlayerChoiceToggleButton to be moved
     if Torghast.PlayerChoiceFrame.customFrame and PlayerChoiceFrame:IsVisible() then
         PlayerChoiceFrame:TryHide()
@@ -159,10 +163,6 @@ function addon:PlayerChoiceToggleButton_OnUpdate()
     end
 
     ------------------------------------------------------------
-
-    if not PlayerChoiceToggleButton then
-        PlayerChoice_LoadUI()
-    end
 
     self:SetButtonMovable("Torghast", PlayerChoiceToggleButton, true)
     self:SetFramePoint("Torghast", PlayerChoiceToggleButton)
