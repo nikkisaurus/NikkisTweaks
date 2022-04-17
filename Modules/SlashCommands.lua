@@ -56,7 +56,6 @@ end
 ------------------------------------------------------------
 
 function addon:IsQuestFlaggedCompleted(questID)
-    print(questID)
     local questID = strsplit(" ", questID)
     questID = tonumber(questID)
     if not questID then return end

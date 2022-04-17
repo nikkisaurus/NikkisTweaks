@@ -7,72 +7,59 @@ local Covenant
 --*------------------------------------------------------------------------
 
 function addon:OnCovenantEnable()
-    Covenant = self.db.global.modules.Covenant
+	Covenant = self.db.global.modules.Covenant
 
-    ------------------------------------------------------------
+	------------------------------------------------------------
 
-    if not CovenantSanctumFrame then
-        CovenantSanctum_LoadUI()
-    end
+	if not CovenantSanctumFrame then
+		CovenantSanctum_LoadUI()
+	end
 
-    -- Save default CovenantSanctumFrame position and scale
-    ns.CovenantSanctumFrame = {
-        point = {CovenantSanctumFrame:GetPoint()},
-        scale = CovenantSanctumFrame:GetScale(),
-    }
+	-- Save default CovenantSanctumFrame position and scale
+	ns.CovenantSanctumFrame = {
+		point = { CovenantSanctumFrame:GetPoint() },
+		scale = CovenantSanctumFrame:GetScale(),
+	}
 
-    self:RegisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED")
+	self:SetFrameMovable("Covenant", CovenantSanctumFrame, true)
+	self:SetFramePoint("Covenant", CovenantSanctumFrame)
+	CovenantSanctumFrame:SetScale(Covenant.CovenantSanctumFrame.scale)
 
-    ------------------------------------------------------------
+	------------------------------------------------------------
 
-    if not CovenantMissionFrame then
-        Garrison_LoadUI()
-    end
+	if not CovenantMissionFrame then
+		Garrison_LoadUI()
+	end
 
-    -- Save default CovenantMissionFrame position and scale
-    ns.CovenantMissionFrame = {
-        point = {CovenantMissionFrame:GetPoint()},
-        scale = CovenantMissionFrame:GetScale(),
-    }
+	-- Save default CovenantMissionFrame position and scale
+	ns.CovenantMissionFrame = {
+		point = { CovenantMissionFrame:GetPoint() },
+		scale = CovenantMissionFrame:GetScale(),
+	}
 
-    self:HookScript(CovenantMissionFrame, "OnShow", function()
-        self:OnCovenantMissionFrameShow()
-    end)
+	self:SetFrameMovable("Covenant", CovenantMissionFrame, true)
+	self:SetFramePoint("Covenant", CovenantMissionFrame)
+	CovenantMissionFrame:SetScale(Covenant.CovenantMissionFrame.scale)
 end
 
 ------------------------------------------------------------
 
 function addon:OnCovenantDisable()
-    Covenant = self.db.global.modules.Covenant
-    if not CovenantSanctumFrame then return end
+	Covenant = self.db.global.modules.Covenant
+	if not CovenantSanctumFrame then
+		return
+	end
 
-    self:UnregisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED")
-    self:SetFrameMovable("Covenant", CovenantSanctumFrame)
-    self:SetFramePoint("Covenant", CovenantSanctumFrame)
-    CovenantSanctumFrame:SetScale(ns.CovenantSanctumFrame.scale)
-    ns.CovenantSanctumFrame = nil
+	self:UnregisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED")
+	self:SetFrameMovable("Covenant", CovenantSanctumFrame)
+	self:SetFramePoint("Covenant", CovenantSanctumFrame)
+	CovenantSanctumFrame:SetScale(ns.CovenantSanctumFrame.scale)
+	ns.CovenantSanctumFrame = nil
 
-    ------------------------------------------------------------
+	------------------------------------------------------------
 
-    self:Unhook(CovenantMissionFrame, "OnShow")
-    self:SetFrameMovable("Covenant", CovenantMissionFrame)
-    self:SetFramePoint("Covenant", CovenantMissionFrame)
-    CovenantMissionFrame:SetScale(ns.CovenantMissionFrame.scale)
-    ns.CovenantMissionFrame = nil
-end
-
---*------------------------------------------------------------------------
-
-function addon:COVENANT_SANCTUM_INTERACTION_STARTED()
-    self:SetFrameMovable("Covenant", CovenantSanctumFrame, true)
-    self:SetFramePoint("Covenant", CovenantSanctumFrame)
-    CovenantSanctumFrame:SetScale(Covenant.CovenantSanctumFrame.scale)
-end
-
-------------------------------------------------------------
-
-function addon:OnCovenantMissionFrameShow()
-    self:SetFrameMovable("Covenant", CovenantMissionFrame, true)
-    self:SetFramePoint("Covenant", CovenantMissionFrame)
-    CovenantMissionFrame:SetScale(Covenant.CovenantMissionFrame.scale)
+	self:SetFrameMovable("Covenant", CovenantMissionFrame)
+	self:SetFramePoint("Covenant", CovenantMissionFrame)
+	CovenantMissionFrame:SetScale(ns.CovenantMissionFrame.scale)
+	ns.CovenantMissionFrame = nil
 end

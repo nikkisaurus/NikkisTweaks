@@ -4,7 +4,7 @@
 ## Author: Nikketa-Hyjal (US)
 ## Version: 1.0
 ## SavedVariables: NikkisTweaksDB
-## OptionalDeps: ChatsToMSBT
+## OptionalDeps: ChatsToMSBT, BtWLoadouts
 
 # Libraries
 Libs\LibStub\LibStub.lua
@@ -26,6 +26,7 @@ Core.lua
 
 # Modules
 Modules\AutoMarkers.lua
+Modules\BtWLoadouts.lua
 Modules\ChatsToMSBTStreamer.lua
 Modules\Covenant.lua
 Modules\Interface.lua
@@ -38,6 +39,7 @@ Modules\Torghast.lua
 # Options
 Options\Options.lua
 Options\AutoMarkers.lua
+Options\BtWLoadouts.lua
 Options\ChatsToMSBTStreamer.lua
 Options\Covenant.lua
 Options\Interface.lua
